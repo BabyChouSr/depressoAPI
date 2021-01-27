@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.tokenize import RegexpTokenizer
+nltk.download('vader_lexicon')
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import re
 import string 
 
@@ -14,7 +16,7 @@ app = FastAPI()
 
 @app.get('/')
 def index():
-    return {'message': 'Hello, World'}
+    return "The depressoAPI is currently running!"
 
 # 4. Route with a single parameter, returns the parameter within a message
 #    Located at: http://127.0.0.1:8000/AnyNameHere
@@ -44,6 +46,15 @@ def processData(text):
     word_tokens = RegexpTokenizer(r'\w+').tokenize(text)
     text = [word for word in word_tokens if not word in stop_words]
     return " ".join(str(x) for x in text)
+
+@app.post('/moodDetect')
+def predict_mood(data:str):
+    text = data
+    sid = SentimentIntensityAnalyzer()
+    mood = sid.polarity_scores(processData(text))['compound']
+    return {
+        'mood': mood
+    }
 
 
 if __name__ == '__main__':

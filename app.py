@@ -47,16 +47,24 @@ def processData(text):
     text = [word for word in word_tokens if not word in stop_words]
     return " ".join(str(x) for x in text)
 
-@app.post('/moodDetect')
-def predict_mood(data:str):
-    text = data
+# @app.post('/moodDetect')
+# def predict_mood(data:str):
+#     text = data
+#     sid = SentimentIntensityAnalyzer()
+#     mood = sid.polarity_scores(processData(text))['compound']
+#     return {
+#         'mood': mood
+#     }
+
+@app.get('/moodDetect/{text}')
+async def predict_mood(text):
+    text = text
     sid = SentimentIntensityAnalyzer()
     mood = sid.polarity_scores(processData(text))['compound']
     return {
         'mood': mood
     }
 
-
 if __name__ == '__main__':
-    uvicorn.run(app, host='127.0.0.1', port=8000)
+    uvicorn.run( app, host='127.0.0.1', port=8000)
 

@@ -8,11 +8,16 @@ from nltk.tokenize import word_tokenize
 from nltk.tokenize import RegexpTokenizer
 nltk.download('vader_lexicon')
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+import tensorflow.keras 
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing import sequence
 import re
 import string 
-
+import numpy as np
 
 app = FastAPI()
+model = tensorflow.keras.models.load_model("modelGLOVE9047.h5")
 
 @app.get('/')
 def index():
@@ -45,7 +50,7 @@ def processData(text):
     text = processTweet(text)
     word_tokens = RegexpTokenizer(r'\w+').tokenize(text)
     text = [word for word in word_tokens if not word in stop_words]
-    return " ".join(str(x) for x in text)
+    return " ".join([str(x) for x in text])
 
 # @app.post('/moodDetect')
 # def predict_mood(data:str):
@@ -59,12 +64,37 @@ def processData(text):
 @app.get('/moodDetect/{text}')
 async def predict_mood(text):
     text = text
+    print(processData(text))
     sid = SentimentIntensityAnalyzer()
     mood = sid.polarity_scores(processData(text))['compound']
     return {
         'mood': mood
     }
 
+@app.get('/depressionDetect/{text}')
+async def predict_depression(text):
+    maxlen = 75
+    text = text
+    text = processData(text)
+    text_list = text.split(" ")
+    strings = open("word_index.txt").read()
+    newtext = " ".join([w for w in text_list if(w in strings)])
+    newtext = np.array([newtext])
+    print(newtext)
+    t = Tokenizer()
+    t.fit_on_texts(newtext)
+    newX = t.texts_to_sequences(newtext)
+    newX = pad_sequences(newX, maxlen = maxlen)
+    classification = (model.predict(newX) >= 0.5).astype("int")
+    if classification == 1:
+        return {
+            'classification' : "depressed"
+        }
+    return  {
+        'classification' : "normal"
+    }
+
+
 if __name__ == '__main__':
-    uvicorn.run( app, host='127.0.0.1', port=8000)
+    uvicorn.run( app, host='127.0.0.1', port=8000, debug = True)
 

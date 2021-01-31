@@ -11,7 +11,7 @@ normal = 0
 # for i,tweet in enumerate(sntwitter.TwitterSearchScraper('from:@depressionnote + since:2017-01-01 until:2021-01-29 -filter:links -filter:replies').get_items()):
 #     csvWriter.writerow([tweet.id, tweet.date, tweet.content, depressed])
 
-# #depressionquotes
+# #depressionquotes worthless
 # for i,tweet in enumerate(sntwitter.TwitterSearchScraper('#depressionquotes + since:2014-01-01 until:2021-01-29 -filter:links -filter:replies').get_items()):
 #     csvWriter.writerow([tweet.id, tweet.date, tweet.content, depressed])
 
@@ -19,8 +19,13 @@ normal = 0
 # for i,tweet in enumerate(sntwitter.TwitterSearchScraper('#suicidal + since:2014-01-01 until:2021-01-29 -filter:links -filter:replies').get_items()):
 #     csvWriter.writerow([tweet.id, tweet.date, tweet.content, depressed])
 
-# happy (not done: inspirational, strength)
-for i,tweet in enumerate(sntwitter.TwitterSearchScraper('#happy + since:2014-01-01 until:2021-01-29 -filter:links -filter:replies').get_items()):
-    csvWriter.writerow([tweet.id, tweet.date, tweet.content, normal])
+# # happy (not done: inspirational, strength)
+# for i,tweet in enumerate(sntwitter.TwitterSearchScraper('#happy + since:2014-01-01 until:2021-01-29 -filter:links -filter:replies').get_items()):
+#     csvWriter.writerow([tweet.id, tweet.date, tweet.content, normal])
 
+# for i,tweet in enumerate(sntwitter.TwitterSearchScraper('#worthless + since:2014-01-01 until:2021-01-29 -filter:links -filter:replies').get_items()):
+#     csvWriter.writerow([tweet.id, tweet.date, tweet.content, depressed])
+
+for i,tweet in enumerate(sntwitter.TwitterSearchScraper('#positivity + since:2014-01-01 until:2021-01-29 -filter:links -filter:replies').get_items()):
+    csvWriter.writerow([tweet.id, tweet.date, tweet.content, normal])
 csvFile.close()

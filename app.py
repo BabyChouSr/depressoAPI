@@ -17,7 +17,7 @@ import string
 import numpy as np
 
 app = FastAPI()
-model = tensorflow.keras.models.load_model("modelGLOVE9047.h5")
+model = tensorflow.keras.models.load_model("modelGLOVE9655only100.h5")
 
 @app.get('/')
 def index():
@@ -36,7 +36,7 @@ def processData(text):
         tweet = re.sub(r'\$\w*', '', tweet)
         tweet = tweet.lower()
         tweet = re.sub(r'https?:\/\/.*\/\w*', '', tweet)
-        tweet = re.sub(r'#\w*', '', tweet)
+        tweet = re.sub(r'#*', '', tweet)
         tweet = re.sub(r'[' + string.punctuation.replace('@', '') + ']+', ' ', tweet)
         tweet = re.sub(r'\b\w{1,2}\b', '', tweet)
         tweet = re.sub(r'\s\s+', ' ', tweet)
@@ -77,7 +77,7 @@ async def predict_depression(text):
     text = text
     text = processData(text)
     text_list = text.split(" ")
-    strings = open("word_index.txt").read()
+    strings = open("word_index2.txt").read()
     newtext = " ".join([w for w in text_list if(w in strings)])
     newtext = np.array([newtext])
     print(newtext)
@@ -86,6 +86,7 @@ async def predict_depression(text):
     newX = t.texts_to_sequences(newtext)
     newX = pad_sequences(newX, maxlen = maxlen)
     classification = (model.predict(newX) >= 0.5).astype("int")
+    print(model.predict(newX))
     if classification == 1:
         return {
             'classification' : "depressed"
